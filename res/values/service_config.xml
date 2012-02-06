@@ -1,0 +1,3 @@
+<resources>
+    <string name="service_path_bing">http://api.search.live.net/json.aspx</string>
+</resources>

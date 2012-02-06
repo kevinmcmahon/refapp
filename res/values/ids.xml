@@ -1,0 +1,4 @@
+<resources>
+    <item type="id" name="dialog_id_loading" />
+    <item type="id" name="dialog_id_searching" />
+</resources>
