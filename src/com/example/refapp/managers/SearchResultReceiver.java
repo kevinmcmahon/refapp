@@ -10,6 +10,8 @@ abstract public class SearchResultReceiver<TActivity extends Activity> extends
         DataRequestResultReceiver<TActivity, BingData> {
 
     public SearchCriteria searchCriteria;
+    public int noOfItemsToBeSkipped;
+    public int noOfItemsToBeTaken;
 
     public SearchResultReceiver(TActivity tActivity, Handler handler) {
         super(tActivity, handler);

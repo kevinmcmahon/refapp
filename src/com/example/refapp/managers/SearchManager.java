@@ -25,6 +25,8 @@ public class SearchManager {
         final int noOfItemsToBeTaken = PAGE_SIZE + (noOfItemsToBeSkipped % PAGE_SIZE);
 
         resultReceiver.searchCriteria = searchCriteria;
+        resultReceiver.noOfItemsToBeSkipped = noOfItemsToBeSkipped;
+        resultReceiver.noOfItemsToBeTaken = PAGE_SIZE;
 
         ArrayList<RequestParam> params = searchCriteria.toRequestParams(noOfItemsToBeSkipped, noOfItemsToBeTaken);
         DataService.start(DataRequestType.WEB_SEARCH, resultReceiver, params);

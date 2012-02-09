@@ -8,30 +8,35 @@ import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.example.refapp.R;
+import com.example.refapp.activities.events.OnRetainLastNonConfigurationInstanceEvent;
 import com.example.refapp.managers.SearchManager;
 import com.example.refapp.managers.SearchResultReceiver;
 import com.example.refapp.models.BingData;
 import com.example.refapp.models.BingResult;
 import com.example.refapp.models.SearchCriteria;
-import com.example.refapp.models.SearchResponse;
-import com.example.refapp.ui.AutoPagingAdapter;
 import com.example.refapp.ui.ViewFactory;
 import com.example.refapp.utils.CollectionUtils;
 import com.example.refapp.utils.IRefreshable;
 import com.example.refapp.utils.constants.Constants;
+import com.github.ignition.core.adapters.EndlessListAdapter;
 import com.google.inject.Inject;
 import roboguice.activity.RoboListActivity;
+import roboguice.activity.event.OnCreateEvent;
+import roboguice.event.Observes;
 import roboguice.inject.InjectExtra;
 import roboguice.inject.InjectView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class BingSearchResultsActivity extends RoboListActivity {
+
+    static private final String KEY_SEARCH_RESULT_RECEIVER = "searchResultReceiver";
 
     @InjectView(android.R.id.list)
     protected ListView listView;
@@ -42,11 +47,9 @@ public class BingSearchResultsActivity extends RoboListActivity {
     @Inject
     SearchManager searchManager;
 
-    @InjectExtra(Constants.EXTRA_SEARCH_RESULT)
-    protected SearchResponse firstSearchResult;
-
     private List<BingResult> resultList;
-    private AutoPagingAdapter<BingSearchResultAdapter> pagingAdapter;
+
+     EndlessListAdapter endlessAdapter;
 
     private BingResultReceiver searchResultReceiver;
 
@@ -54,9 +57,26 @@ public class BingSearchResultsActivity extends RoboListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bing_list);
-        resultList = Arrays.asList(firstSearchResult.webResults.results);
 
-        listView.setAdapter(new BingSearchResultAdapter(this, resultList, createBingResultViewFactory()));
+        endlessAdapter = new EndlessListAdapter<BingResult>(this,R.layout.pending_search_result) {
+            public ViewFactory<BingResult> viewFactory;
+
+            @Override
+            protected View doGetView(int position, View convertView, ViewGroup viewGroup) {
+                BingResultViewHolder viewHolder;
+                viewFactory = createBingResultViewFactory();
+                if (convertView == null) {
+                    Context context = BingSearchResultsActivity.this.getApplicationContext();
+                    convertView = viewFactory.getView(context);
+                }
+
+                viewHolder = (BingResultViewHolder) convertView.getTag();
+                viewHolder.update(getItem(position));
+                return convertView;
+            }
+        };
+
+        listView.setAdapter(endlessAdapter);
         listView.setItemsCanFocus(true);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,6 +86,51 @@ public class BingSearchResultsActivity extends RoboListActivity {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(result.url)));
             }
         });
+    }
+
+    private void restoreActivityState(@Observes OnCreateEvent event) {
+        Bundle savedInstanceState = event.getSavedInstanceState();
+
+        if (savedInstanceState != null) {
+            resultList = savedInstanceState.getParcelableArrayList(Constants.EXTRA_SEARCH_RESULT);
+        }
+
+        if (resultList == null) {
+            resultList = new ArrayList<BingResult>();
+        }
+
+
+        // Restore saved instance state
+        // Restore non configuration instance
+        Map<String, Object> instanceMap = getLastNonConfigurationInstanceMap();
+
+        if (instanceMap != null) {
+            searchResultReceiver =
+                    (BingResultReceiver) instanceMap.get(KEY_SEARCH_RESULT_RECEIVER);
+        }
+
+        if (searchResultReceiver == null) {
+            searchResultReceiver = new BingResultReceiver(this, new Handler());
+        }
+    }
+
+    private void retainNonConfigurationInstance(@Observes OnRetainLastNonConfigurationInstanceEvent event) {
+        event.instanceMap.put(KEY_SEARCH_RESULT_RECEIVER, searchResultReceiver);
+    }
+
+    /**
+     * Do not call getLastNonConfigurationInstance directly, use getLastNonConfigurationInstanceMap instead
+     *
+     * @return Map of non-configuration instances
+     */
+    @SuppressWarnings({"unchecked"})
+    public Map<String, Object> getLastNonConfigurationInstanceMap() {
+        Object obj = getLastNonConfigurationInstance();
+
+        if (obj == null) return null;
+
+        assert obj instanceof Map;
+        return (Map<String, Object>) obj;
     }
 
     private ViewFactory<BingResult> createBingResultViewFactory() {
@@ -89,11 +154,13 @@ public class BingSearchResultsActivity extends RoboListActivity {
     }
 
     private void refreshList() {
-
+        endlessAdapter.notifyDataSetChanged();
     }
 
     private void refreshResultStatus() {
-
+        searchManager.performSearch(searchCriteria,
+                resultList.size(),
+                searchResultReceiver);
     }
 
     protected void loadNextResultPage() {
@@ -126,38 +193,6 @@ public class BingSearchResultsActivity extends RoboListActivity {
                 // Do nothing
             }
             super.onPostExecute(activity);
-        }
-    }
-
-    static class BingSearchResultAdapter extends ArrayAdapter<BingResult> {
-        private final ViewFactory<BingResult> viewFactory;
-
-        public BingSearchResultAdapter(Context context, List<BingResult> objects, ViewFactory<BingResult> viewFactory) {
-            super(context, android.R.id.text1, objects);
-            this.viewFactory = viewFactory;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            BingResultViewHolder viewHolder;
-            if (convertView == null) {
-                Context context = getContext();
-                convertView = viewFactory.getView(context);
-            }
-
-            viewHolder = (BingResultViewHolder) convertView.getTag();
-            viewHolder.update(getItem(position));
-            return convertView;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
         }
     }
 
