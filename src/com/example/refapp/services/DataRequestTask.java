@@ -9,13 +9,11 @@ import com.example.refapp.models.RequestParam;
 import com.example.refapp.utils.constants.Config;
 import com.example.refapp.utils.errors.RefAppException;
 import roboguice.event.EventManager;
-import roboguice.inject.ContextSingleton;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
 
 import java.util.List;
 
-@ContextSingleton
 class DataRequestTask<ResultT> extends RoboAsyncTask<ResultT> {
     private final ResultReceiver receiver;
     private final Bundle requestBundle;
