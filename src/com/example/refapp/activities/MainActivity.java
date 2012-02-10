@@ -13,12 +13,14 @@ import com.example.refapp.managers.SearchManager;
 import com.example.refapp.models.SearchCriteria;
 import com.google.inject.Inject;
 import roboguice.activity.RoboActivity;
+import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
+@ContentView(R.layout.main)
 public class MainActivity extends RoboActivity
 {
-    @InjectView(R.id.search_text)
+    @InjectView(tag="search_query")
     EditText searchQueryEditText;
 
     @InjectView(R.id.btn_search)
@@ -34,7 +36,6 @@ public class MainActivity extends RoboActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
 
         searchResultReceiver = new SearchManager.InitialSearchResultReceiver(this, new Handler());
 
