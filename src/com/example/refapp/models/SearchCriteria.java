@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public class SearchCriteria implements Parcelable {
     public static final String SEARCH_TYPE_WEB = "web";
     public static final String BING_APP_ID = "0BFE168E13D637883346DBDF05B1DCCEFD7AB9F5";
+    public static final String PAGE_SIZE = "25";
+
 
     private String searchText;
 
@@ -30,11 +32,13 @@ public class SearchCriteria implements Parcelable {
         parcel.writeString(searchText);
     }
 
-    public ArrayList<RequestParam> toRequestParams(int noOfItemsToBeSkipped, int noOfItemsToBeTaken) {
+    public ArrayList<RequestParam> toRequestParams(int noOfItemsToBeSkipped) {
         ArrayList<RequestParam> params = new ArrayList<RequestParam>();
         params.add(new RequestParam(ParamType.APP_ID,BING_APP_ID));
         params.add(new RequestParam(ParamType.SOURCES,SEARCH_TYPE_WEB));
         params.add(new RequestParam(ParamType.SEARCH_TEXT,searchText));
+        params.add(new RequestParam(ParamType.COUNT,PAGE_SIZE));
+        params.add(new RequestParam(ParamType.OFFSET,Integer.toString(noOfItemsToBeSkipped)));
         return params;
     }
 

@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.example.refapp.R;
+import com.example.refapp.activities.events.OnRetainLastNonConfigurationInstanceEvent;
 import com.example.refapp.managers.SearchManager;
 import com.example.refapp.managers.SearchResultReceiver;
 import com.example.refapp.models.BingData;
@@ -25,11 +26,15 @@ import com.example.refapp.utils.IRefreshable;
 import com.example.refapp.utils.constants.Constants;
 import com.google.inject.Inject;
 import roboguice.activity.RoboListActivity;
+import roboguice.activity.event.OnCreateEvent;
+import roboguice.event.Observes;
 import roboguice.inject.InjectExtra;
 import roboguice.inject.InjectView;
+import roboguice.util.Ln;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class BingSearchResultsActivity extends RoboListActivity {
 
@@ -46,17 +51,31 @@ public class BingSearchResultsActivity extends RoboListActivity {
     protected SearchResponse firstSearchResult;
 
     private List<BingResult> resultList;
-    private AutoPagingAdapter<BingSearchResultAdapter> pagingAdapter;
 
     private BingResultReceiver searchResultReceiver;
+    private AutoPagingAdapter pagingAdapter;
+    private static final String KEY_SEARCH_RESULT_RECEIVER = "searchResultReceiver";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bing_list);
+
         resultList = Arrays.asList(firstSearchResult.webResults.results);
 
-        listView.setAdapter(new BingSearchResultAdapter(this, resultList, createBingResultViewFactory()));
+        pagingAdapter = new AutoPagingAdapter<BingSearchResultAdapter>(this,
+                new BingSearchResultAdapter(this, resultList, createBingResultViewFactory()),
+                R.layout.pending_search_result);
+
+        pagingAdapter.setOnLoadMoreListener(new AutoPagingAdapter.OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(AutoPagingAdapter adapter, int currentSize) {
+                Ln.d("Request for more... next starting index[%d]", currentSize);
+                loadNextResultPage();
+            }
+        });
+
+        listView.setAdapter(pagingAdapter);
         listView.setItemsCanFocus(true);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -76,8 +95,6 @@ public class BingSearchResultsActivity extends RoboListActivity {
         if (searchResult != null) {
             appendResult(searchResult);
         }
-
-        refreshResultStatus();
     }
 
     private void appendResult(BingData searchResult) {
@@ -88,18 +105,19 @@ public class BingSearchResultsActivity extends RoboListActivity {
         }
     }
 
-    private void refreshList() {
+    void refreshList() {
+        ((ArrayAdapter <BingResult>) pagingAdapter.getWrappedAdapter()).notifyDataSetChanged();
 
     }
 
-    private void refreshResultStatus() {
-
-    }
-
-    protected void loadNextResultPage() {
+    void loadNextResultPage() {
         searchManager.performSearch(searchCriteria,
                 resultList.size(),
                 searchResultReceiver);
+    }
+
+    public Map<String, Object> getLastNonConfigurationInstanceMap() {
+        return null;
     }
 
     static class BingResultReceiver extends SearchResultReceiver<BingSearchResultsActivity> {
@@ -159,6 +177,28 @@ public class BingSearchResultsActivity extends RoboListActivity {
         public long getItemId(int position) {
             return 0;
         }
+    }
+
+
+    private void restoreActivityState(@Observes OnCreateEvent event) {
+        // Restore saved instance state
+        // Restore non configuration instance
+        Map<String, Object> instanceMap = getLastNonConfigurationInstanceMap();
+
+        if (instanceMap != null) {
+            searchResultReceiver =
+                    (BingResultReceiver) instanceMap.get(KEY_SEARCH_RESULT_RECEIVER);
+
+            }
+
+        if (searchResultReceiver == null) {
+            searchResultReceiver = new BingResultReceiver(this, new Handler());
+        }
+
+    }
+
+    private void retainNonConfigurationInstance(@Observes OnRetainLastNonConfigurationInstanceEvent event) {
+        event.instanceMap.put(KEY_SEARCH_RESULT_RECEIVER, searchResultReceiver);
     }
 
     static protected class BingResultViewFactory extends ViewFactory<BingResult> {

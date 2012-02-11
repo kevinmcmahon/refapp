@@ -19,14 +19,10 @@ import java.util.ArrayList;
 @Singleton
 public class SearchManager {
 
-    public static final int PAGE_SIZE = 25;
-
     public void performSearch(SearchCriteria searchCriteria, int noOfItemsToBeSkipped, SearchResultReceiver resultReceiver) {
-        final int noOfItemsToBeTaken = PAGE_SIZE + (noOfItemsToBeSkipped % PAGE_SIZE);
-
         resultReceiver.searchCriteria = searchCriteria;
 
-        ArrayList<RequestParam> params = searchCriteria.toRequestParams(noOfItemsToBeSkipped, noOfItemsToBeTaken);
+        ArrayList<RequestParam> params = searchCriteria.toRequestParams(noOfItemsToBeSkipped);
         DataService.start(DataRequestType.WEB_SEARCH, resultReceiver, params);
     }
 
