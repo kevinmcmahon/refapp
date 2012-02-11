@@ -106,7 +106,7 @@ public class BingSearchResultsActivity extends RoboListActivity {
     }
 
     void refreshList() {
-        ((ArrayAdapter <BingResult>) pagingAdapter.getWrappedAdapter()).notifyDataSetChanged();
+        ((ArrayAdapter<BingResult>) pagingAdapter.getWrappedAdapter()).notifyDataSetChanged();
 
     }
 
@@ -114,10 +114,6 @@ public class BingSearchResultsActivity extends RoboListActivity {
         searchManager.performSearch(searchCriteria,
                 resultList.size(),
                 searchResultReceiver);
-    }
-
-    public Map<String, Object> getLastNonConfigurationInstanceMap() {
-        return null;
     }
 
     static class BingResultReceiver extends SearchResultReceiver<BingSearchResultsActivity> {
@@ -189,7 +185,7 @@ public class BingSearchResultsActivity extends RoboListActivity {
             searchResultReceiver =
                     (BingResultReceiver) instanceMap.get(KEY_SEARCH_RESULT_RECEIVER);
 
-            }
+        }
 
         if (searchResultReceiver == null) {
             searchResultReceiver = new BingResultReceiver(this, new Handler());
@@ -199,6 +195,21 @@ public class BingSearchResultsActivity extends RoboListActivity {
 
     private void retainNonConfigurationInstance(@Observes OnRetainLastNonConfigurationInstanceEvent event) {
         event.instanceMap.put(KEY_SEARCH_RESULT_RECEIVER, searchResultReceiver);
+    }
+
+    /**
+     * Do not call getLastNonConfigurationInstance directly, use getLastNonConfigurationInstanceMap instead
+     *
+     * @return Map of non-configuration instances
+     */
+    @SuppressWarnings({"unchecked"})
+    public Map<String, Object> getLastNonConfigurationInstanceMap() {
+        Object obj = getLastNonConfigurationInstance();
+
+        if (obj == null) return null;
+
+        assert obj instanceof Map;
+        return (Map<String, Object>) obj;
     }
 
     static protected class BingResultViewFactory extends ViewFactory<BingResult> {
