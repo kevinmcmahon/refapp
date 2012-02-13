@@ -48,7 +48,7 @@ public class SearchManager {
 
             Intent intent = new Intent(activity, BingSearchResultsActivity.class);
             intent.putExtra(Constants.EXTRA_SEARCH_CRITERIA, searchCriteria);
-            intent.putExtra(Constants.EXTRA_SEARCH_RESULT, searchResult.searchResponse);
+            intent.putExtra(Constants.EXTRA_SEARCH_RESULT,searchResult);
 
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(intent);

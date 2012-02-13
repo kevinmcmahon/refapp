@@ -40,7 +40,7 @@ public class MainActivity extends RoboActivity
         searchResultReceiver = new SearchManager.InitialSearchResultReceiver(this, new Handler());
 
         // Wire UI interaction
-        searchQueryEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        searchQueryEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId,
                                           android.view.KeyEvent event) {
@@ -76,8 +76,7 @@ public class MainActivity extends RoboActivity
         if(searchResultReceiver != null)
             searchResultReceiver.dispose();
 
-        Handler handler = new Handler();
-        searchResultReceiver = new SearchManager.InitialSearchResultReceiver(this, handler); 
+        searchResultReceiver = new SearchManager.InitialSearchResultReceiver(this, new Handler());
     }
 
     @Override

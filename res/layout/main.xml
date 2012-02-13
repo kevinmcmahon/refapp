@@ -9,13 +9,13 @@
             android:tag="search_query"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Bing search query."
+            android:hint="@string/search_field_hint_text"
             />
     <Button
             android:id="@+id/btn_search"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="@string/search_btn_text"
             />
 </LinearLayout>
 

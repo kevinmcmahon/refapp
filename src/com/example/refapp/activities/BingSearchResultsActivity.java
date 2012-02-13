@@ -18,7 +18,6 @@ import com.example.refapp.managers.SearchResultReceiver;
 import com.example.refapp.models.BingData;
 import com.example.refapp.models.BingResult;
 import com.example.refapp.models.SearchCriteria;
-import com.example.refapp.models.SearchResponse;
 import com.example.refapp.ui.AutoPagingAdapter;
 import com.example.refapp.ui.ViewFactory;
 import com.example.refapp.utils.CollectionUtils;
@@ -32,6 +31,7 @@ import roboguice.inject.InjectExtra;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +44,11 @@ public class BingSearchResultsActivity extends RoboListActivity {
     @InjectExtra(Constants.EXTRA_SEARCH_CRITERIA)
     protected SearchCriteria searchCriteria;
 
+    @InjectExtra(Constants.EXTRA_SEARCH_RESULT)
+    protected BingData firstSearchResult;
+
     @Inject
     SearchManager searchManager;
-
-    @InjectExtra(Constants.EXTRA_SEARCH_RESULT)
-    protected SearchResponse firstSearchResult;
 
     private List<BingResult> resultList;
 
@@ -60,8 +60,6 @@ public class BingSearchResultsActivity extends RoboListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bing_list);
-
-        resultList = Arrays.asList(firstSearchResult.webResults.results);
 
         pagingAdapter = new AutoPagingAdapter<BingSearchResultAdapter>(this,
                 new BingSearchResultAdapter(this, resultList, createBingResultViewFactory()),
@@ -85,6 +83,21 @@ public class BingSearchResultsActivity extends RoboListActivity {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(result.url)));
             }
         });
+
+        if (firstSearchResult != null) {
+            refreshResultStatus();
+
+            if (CollectionUtils.isEmpty(resultList)) {
+                appendResult(firstSearchResult);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList(Constants.EXTRA_SEARCH_RESULT, (ArrayList<BingResult>) resultList);
     }
 
     private ViewFactory<BingResult> createBingResultViewFactory() {
@@ -175,8 +188,27 @@ public class BingSearchResultsActivity extends RoboListActivity {
         }
     }
 
+    protected void refreshResultStatus() {
+
+        pagingAdapter.fullListCount = getFullResultCount();
+    }
+
+    protected int getFullResultCount() {
+        return firstSearchResult == null ? 0 : firstSearchResult.searchResponse.webResults.totalResults;
+    }
 
     private void restoreActivityState(@Observes OnCreateEvent event) {
+
+        Bundle savedInstanceState = event.getSavedInstanceState();
+
+        if (savedInstanceState != null) {
+            resultList = savedInstanceState.getParcelableArrayList(Constants.EXTRA_SEARCH_RESULT);
+        }
+
+        if (resultList == null) {
+            resultList = new ArrayList<BingResult>();
+        }
+
         // Restore saved instance state
         // Restore non configuration instance
         Map<String, Object> instanceMap = getLastNonConfigurationInstanceMap();
@@ -184,13 +216,11 @@ public class BingSearchResultsActivity extends RoboListActivity {
         if (instanceMap != null) {
             searchResultReceiver =
                     (BingResultReceiver) instanceMap.get(KEY_SEARCH_RESULT_RECEIVER);
-
         }
 
         if (searchResultReceiver == null) {
             searchResultReceiver = new BingResultReceiver(this, new Handler());
         }
-
     }
 
     private void retainNonConfigurationInstance(@Observes OnRetainLastNonConfigurationInstanceEvent event) {
@@ -225,10 +255,12 @@ public class BingSearchResultsActivity extends RoboListActivity {
 
     static protected class BingResultViewHolder extends ViewFactory.ViewHolder<BingResult> implements IRefreshable {
         protected TextView txtTitle;
+        protected TextView txtDesc;
         protected BingResult data;
 
         public BingResultViewHolder(View parent) {
             txtTitle = (TextView) parent.findViewById(R.id.txt_title);
+            txtDesc = (TextView) parent.findViewById(R.id.txt_detail);
         }
 
         @Override
@@ -240,6 +272,7 @@ public class BingSearchResultsActivity extends RoboListActivity {
         @Override
         public void refresh() {
             txtTitle.setText(data.title);
+            txtDesc.setText(data.displayUrl);
         }
     }
 }
