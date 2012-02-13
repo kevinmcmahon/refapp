@@ -7,4 +7,7 @@
     <string name="msg_searching">Searching Bing…</string>
     <string name="search_btn_text">Search</string>
     <string name="search_field_hint_text">Enter Bing search query.</string>
+    <string name="adv_btn_text">Advanced Options</string>
+    <string name="web_option_text">Web</string>
+    <string name="image_option_text">Image</string>
 </resources>

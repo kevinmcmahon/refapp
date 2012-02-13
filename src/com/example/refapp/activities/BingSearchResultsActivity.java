@@ -194,7 +194,7 @@ public class BingSearchResultsActivity extends RoboListActivity {
     }
 
     protected int getFullResultCount() {
-        return firstSearchResult == null ? 0 : firstSearchResult.searchResponse.webResults.totalResults;
+        return firstSearchResult == null || firstSearchResult.searchResponse.webResults == null ? 0 : firstSearchResult.searchResponse.webResults.totalResults;
     }
 
     private void restoreActivityState(@Observes OnCreateEvent event) {

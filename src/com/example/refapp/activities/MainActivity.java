@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.*;
 import com.example.refapp.R;
 import com.example.refapp.managers.SearchManager;
 import com.example.refapp.models.SearchCriteria;
@@ -27,6 +25,12 @@ public class MainActivity extends RoboActivity
 
     @InjectView(R.id.btn_search)
     Button searchButton;
+
+    @InjectView(R.id.adv_options_layout)
+    LinearLayout advOptionsLayout;
+
+    @InjectView(R.id.btn_adv_options)
+    Button advOptionsButton;
 
     @Inject
     private SearchManager searchManager;
@@ -62,6 +66,19 @@ public class MainActivity extends RoboActivity
             public void onClick(View view) {
                 String query = searchQueryEditText.getText().toString();
                 doSearch(query);
+            }
+        });
+
+        advOptionsLayout.setVisibility(View.GONE);
+        advOptionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(advOptionsLayout.getVisibility() == View.VISIBLE) {
+                    advOptionsLayout.setVisibility(View.GONE);
+                }
+                else {
+                    advOptionsLayout.setVisibility(View.VISIBLE);
+                }
             }
         });
     }

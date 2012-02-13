@@ -9,7 +9,6 @@ import com.example.refapp.R;
 
 import roboguice.util.Ln;
 
-
 public class DialogHelper {
     static public Dialog createDialog(final Activity activity, final int id, final Bundle args) {
         switch (id) {

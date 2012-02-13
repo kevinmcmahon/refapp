@@ -11,6 +11,30 @@
             android:layout_height="wrap_content"
             android:hint="@string/search_field_hint_text"
             />
+    <RadioGroup
+            android:orientation="horizontal"
+            android:id="@+id/adv_options_layout"
+            android:weightSum="1.0"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+        <RadioButton android:id="@+id/radio_one"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="0.5"
+                     android:text="@string/web_option_text"
+                    android:checked="true"/>
+        <RadioButton android:id="@+id/radio_two"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="0.5"
+                     android:hint="@string/image_option_text"/>
+    </RadioGroup>
+    <Button
+            android:id="@+id/btn_adv_options"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/adv_btn_text"
+            />
     <Button
             android:id="@+id/btn_search"
             android:layout_width="fill_parent"
