@@ -3,14 +3,24 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="android:textColor">@color/ref_black</item>
+    </style>
+    <style name="Text.Large">
+        <item name="android:textAppearance">@android:style/TextAppearance.Large</item>
     </style>
     <style name="Text.Small">
+        <item name="android:textColor">@color/ref_blue_lighter</item>
         <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
     </style>
-    <style name="Container" />
+
+    <style name="Container"/>
     <style name="Container.Row">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/row_padding</item>
+    </style>
+
+    <style name="RefLightTheme" parent="android:Theme.Light.NoTitleBar">
+
     </style>
 </resources>

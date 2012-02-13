@@ -1,0 +1,9 @@
+<resources>
+    <color name="ref_black">#000A1A</color>
+
+    <color name="ref_blue_darker">#005CE6</color>
+    <color name="ref_blue">#0066FF</color>
+    <color name="ref_blue_lighter">#1975FF</color>
+
+    <color name="ref_white">#E6F0FF</color>
+</resources>

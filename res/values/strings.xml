@@ -3,6 +3,8 @@
     <string name="app_name">RefApp</string>
     <string name="msg_server_error">Server Error</string>
     <string name="msg_network_error">Network Error</string>
+    <string name="msg_loading">Loading…</string>
+    <string name="msg_searching">Searching Bing…</string>
     <string name="search_btn_text">Search</string>
     <string name="search_field_hint_text">Enter Bing search query.</string>
 </resources>

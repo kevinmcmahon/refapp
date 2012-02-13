@@ -1,5 +1,6 @@
 package com.example.refapp.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.example.refapp.R;
 import com.example.refapp.managers.SearchManager;
 import com.example.refapp.models.SearchCriteria;
+import com.example.refapp.ui.DialogHelper;
 import com.google.inject.Inject;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -87,6 +89,16 @@ public class MainActivity extends RoboActivity
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        return onCreateDialog(id, null);
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id, Bundle args) {
+        return DialogHelper.createDialog(this, id, args);
     }
 
     void doSearch(String searchText) {

@@ -260,7 +260,7 @@ public class BingSearchResultsActivity extends RoboListActivity {
 
         public BingResultViewHolder(View parent) {
             txtTitle = (TextView) parent.findViewById(R.id.txt_title);
-            txtDesc = (TextView) parent.findViewById(R.id.txt_detail);
+            txtDesc = (TextView) parent.findViewById(R.id.txt_desc);
         }
 
         @Override
