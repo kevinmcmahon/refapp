@@ -3,6 +3,7 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
+
         >
     <EditText
             android:id="@+id/search_query"
@@ -16,13 +17,16 @@
             android:id="@+id/adv_options_layout"
             android:weightSum="1.0"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:visibility="gone" >
+
         <RadioButton android:id="@+id/radio_one"
                      android:layout_width="0dp"
                      android:layout_height="wrap_content"
                      android:layout_weight="0.5"
                      android:text="@string/web_option_text"
-                    android:checked="true"/>
+                     android:checked="true"/>
         <RadioButton android:id="@+id/radio_two"
                      android:layout_width="0dp"
                      android:layout_height="wrap_content"
@@ -42,4 +46,5 @@
             android:text="@string/search_btn_text"
             />
 </LinearLayout>
+
 

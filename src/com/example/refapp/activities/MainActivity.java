@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import com.example.refapp.R;
 import com.example.refapp.managers.SearchManager;
 import com.example.refapp.models.SearchCriteria;
@@ -18,16 +21,16 @@ import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
 @ContentView(R.layout.main)
-public class MainActivity extends RoboActivity
-{
-    @InjectView(tag="search_query")
+public class MainActivity extends RoboActivity {
+
+    @InjectView(tag = "search_query")
     EditText searchQueryEditText;
 
     @InjectView(R.id.btn_search)
     Button searchButton;
 
     @InjectView(R.id.adv_options_layout)
-    LinearLayout advOptionsLayout;
+    RadioGroup advOptionsLayout;
 
     @InjectView(R.id.btn_adv_options)
     Button advOptionsButton;
@@ -36,11 +39,13 @@ public class MainActivity extends RoboActivity
     private SearchManager searchManager;
 
     private SearchManager.InitialSearchResultReceiver searchResultReceiver;
+    private boolean toggle = true;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         searchResultReceiver = new SearchManager.InitialSearchResultReceiver(this, new Handler());
@@ -69,11 +74,10 @@ public class MainActivity extends RoboActivity
             }
         });
 
-        advOptionsLayout.setVisibility(View.GONE);
         advOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(advOptionsLayout.getVisibility() == View.VISIBLE) {
+                if (advOptionsLayout.getVisibility() == View.VISIBLE) {
                     advOptionsLayout.setVisibility(View.GONE);
                 }
                 else {
@@ -92,7 +96,7 @@ public class MainActivity extends RoboActivity
     }
 
     private void reset() {
-        if(searchResultReceiver != null)
+        if (searchResultReceiver != null)
             searchResultReceiver.dispose();
 
         searchResultReceiver = new SearchManager.InitialSearchResultReceiver(this, new Handler());

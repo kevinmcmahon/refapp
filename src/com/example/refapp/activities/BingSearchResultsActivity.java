@@ -2,7 +2,6 @@ package com.example.refapp.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -80,7 +79,10 @@ public class BingSearchResultsActivity extends RoboListActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 BingResult result = resultList.get(position);
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(result.url)));
+                //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(result.url)));
+                Intent i = new Intent(BingSearchResultsActivity.this,WebResultDetailActivity.class);
+                i.putExtra(Constants.EXTRA_BING_WEB_RESULT,result);
+                startActivity(i);
             }
         });
 
